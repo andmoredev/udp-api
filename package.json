@@ -1,0 +1,13 @@
+{
+  "name": "hello-world-task",
+  "version": "1.0.0",
+  "description": "Hello World ECS Task",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "express": "^4.18.2"
+  }
+}

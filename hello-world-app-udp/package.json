@@ -1,0 +1,13 @@
+{
+  "name": "hello-world-task-udp",
+  "version": "1.0.0",
+  "description": "Hello World ECS Task",
+  "main": "index-udp.js",
+  "scripts": {
+    "start": "node index-udp.js"
+  },
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "express": "^4.18.2"
+  }
+}

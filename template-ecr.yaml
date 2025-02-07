@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  RepositoryName:
+    Type: String
+
+Resources:
+  HelloWorldRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub ${RepositoryName}
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: MUTABLE
+
+  ECRRepositoryUrlParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /hello-world/ecr-repository-url
+      Type: String
+      Value: !Sub ${HelloWorldRepository.RepositoryUri}
+      Description: URL of the Hello World ECR Repository
+
+Outputs:
+  ECRRepositoryUrl:
+    Description: URL of the ECR Repository
+    Value: !GetAtt HelloWorldRepository.RepositoryUri
