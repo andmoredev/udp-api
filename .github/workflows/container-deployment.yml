@@ -46,6 +46,7 @@ jobs:
         # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # Also tag as latest
         # docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker tag hello-world-app-udp:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker tag hello-world-app-udp:latest 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
 
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
