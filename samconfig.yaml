@@ -24,7 +24,6 @@ ecr:
   deploy:
     parameters:
       stack_name: udp-service-ecr
-      resolve_s3: true
       s3_prefix: udp-service-ecr
       region: us-east-1
       capabilities: CAPABILITY_IAM
@@ -40,7 +39,6 @@ network:
   deploy:
     parameters:
       stack_name: udp-service-networking
-      resolve_s3: true
       s3_prefix: udp-service-networking
       region: us-east-1
       capabilities: CAPABILITY_IAM
@@ -54,7 +52,6 @@ ecs:
   deploy:
     parameters:
       stack_name: udp-service-ecs
-      resolve_s3: true
       s3_prefix: udp-service-ecs
       region: us-east-1
       capabilities: CAPABILITY_IAM

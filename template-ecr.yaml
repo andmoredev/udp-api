@@ -26,4 +26,3 @@ Outputs:
   ECRRepositoryUrl:
     Description: URL of the ECR Repository
     Value: !GetAtt HelloWorldRepository.RepositoryUri
-    
