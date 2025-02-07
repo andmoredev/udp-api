@@ -76,3 +76,9 @@ echo "Hello" | nc -u -w1 hello-world-udp-nlb-a52d3d855052d6d1.elb.us-east-1.amaz
 - Security Group
 - CloudWatch Log Group
 - IAM Role for task execution
+
+
+
+
+# TODO
+* Added manual permissions to pipeline execution for this to work with ECR.
