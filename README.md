@@ -4,8 +4,8 @@ This project creates an ECS task using AWS SAM that returns a "Hello World" mess
 
 ## Prerequisites
 
-- AWS SAM CLI
-- Docker
+- AWS SAM CLI installed and configured
+- Docker installed (for building and deploying the application)
 - AWS Account and configured credentials
 
 ## Deployment
@@ -40,6 +40,13 @@ docker push {ECRRepositoryUrl}:latest
 docker push 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
 ```
 ### 3. Build & Deploy Networking Components
+- VPC with necessary DNS support
+- Public subnets across 2 availability zones
+- Internet Gateway with route table configuration
+- Security Group configured for UDP/TCP ports 53 and HTTP port 80
+- Network Load Balancer with UDP listener
+- Target Group for UDP traffic on port 53
+
 ```bash
 # Build the Network Stack
 sam build --config-file samconfig.yaml --config-env network --template template-network.yaml

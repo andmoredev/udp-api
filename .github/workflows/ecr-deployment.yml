@@ -1,4 +1,4 @@
-name: ECR Template Deployment
+name: Elastic Container Registry Deployment
 
 on:
   push:

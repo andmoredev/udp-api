@@ -1,4 +1,4 @@
-name: ECS Template Deployment
+name: Elastic Container Service Deployment
 
 on:
   push:

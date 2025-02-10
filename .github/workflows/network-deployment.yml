@@ -1,4 +1,4 @@
-name: Network Template Deployment
+name: Network Components Deployment
 
 on:
   push:

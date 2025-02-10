@@ -1,4 +1,4 @@
-name: Build and Deploy Container Image to ECR
+name: Build Container and Publish to ECR
 
 on:
   push:
@@ -42,11 +42,9 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./hello-world-app-udp
-        # docker build --platform linux/amd64 -t hello-world-app-udp ./hello-world-app-udp
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
         # Also tag as latest
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        # docker tag hello-world-app-udp:latest 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
 
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        # docker push 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
