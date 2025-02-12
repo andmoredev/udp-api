@@ -21,24 +21,20 @@ sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.
 sam deploy --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml
 ```
 
-Copy output value for ECRRepositoryUrl for next step
-
 ### 2. Build and push the Docker image:
 ```bash
 # Login to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 965116670064.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {ACCOUNT_ID}].dkr.ecr.us-east-1.amazonaws.com
 
 # Build the Docker image
 docker build --platform linux/amd64 -t hello-world-app-udp ./hello-world-app-udp
 
 # Tag the image
-docker tag hello-world-app-udp:latest {ECRRepositoryUrl}:latest
-docker tag hello-world-app-udp:latest 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
+docker tag hello-world-app-udp:{TAG} {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
 
 # Push the image to ECR
-docker push {ECRRepositoryUrl}:latest
-docker push 965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo:latest
-```
+docker push {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
+
 ### 3. Build & Deploy Networking Components
 - VPC with necessary DNS support
 - Public subnets across 2 availability zones
