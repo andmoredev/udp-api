@@ -48,8 +48,10 @@ jobs:
 
     - name: Replacements
       env:
-        FOO: Hello
-        BAR: Whatup
+        BUCKET: ${{ vars.BUCKET }}
+        LOGICAL_ENV: ${{ vars.LOGICAL_ENV }}
+        AWS_REGION: ${{ vars.AWS_REGION }}
+        DYNAMODB_TABLE: ${{ vars.DYNAMODB_TABLE }}
       run: |
         envsubst < testfile.txt > mytest.txt
         echo 'im done'
