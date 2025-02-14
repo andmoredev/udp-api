@@ -46,11 +46,12 @@ jobs:
           fi
         done
 
-        # If any files failed, print them and exit with an error
+        # If any files failed, print them to GitHub Summary and exit with an error
         if [ ${#FAILED_FILES[@]} -ne 0 ]; then
-          echo "❌ The following files failed the validation:"
+          echo "### ❌ Files Missing Required Copyright Notice" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           for f in "${FAILED_FILES[@]}"; do
-            echo "- $f"
+            echo "- $f" >> $GITHUB_STEP_SUMMARY
           done
           exit 1
         fi
