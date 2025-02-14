@@ -24,37 +24,11 @@ jobs:
       with:
         fetch-depth: 2
 
-    - name: Validate file header blob
-      run: |
-        # Get the default branch (main or master)
-        DEFAULT_BRANCH=$(git remote show origin | awk '/HEAD branch/ {print $NF}')
-
-        # Fetch the latest changes
-        git fetch origin $DEFAULT_BRANCH --depth=1
-
-        # Get the list of changed files compared to the default branch
-        FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
-
-        # Define the expected patterns
-        PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
-        PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
-
-        # Read the files list from the previous step
-        for file in $FILES; do
-          # Skip binary files
-          if [[ $(file --mime-type -b "$file") == text/* ]]; then
-            # Read the first line
-            FIRST_LINE=$(head -n 1 "$file")
-
-            # Check if it matches the expected pattern
-            if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
-              echo "❌ ERROR: The file '$file' must start with '$PATTERN1' or '$PATTERN2'."
-              exit 1
-            fi
-          fi
-        done
-
-        echo "✅ All updated files meet the required pattern."
+    - name: Validate Copyright
+      uses: ./.github/actions/validate-copyright
+      with:
+        fail-step: false
+        updated-only: true
 
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4

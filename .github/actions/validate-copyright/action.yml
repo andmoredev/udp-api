@@ -39,8 +39,6 @@ runs:
           FILES+=$(find . -type f -not -path "./.git/*")
         fi
 
-
-
         # Initialize an empty array to store failed files
         FAILED_FILES=()
 
