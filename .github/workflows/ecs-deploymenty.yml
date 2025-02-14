@@ -24,8 +24,7 @@ jobs:
       with:
         fetch-depth: 2
 
-    - name: Get changed files in the current branch
-      id: changed-files
+    - name: Validate file header blob
       run: |
         # Get the default branch (main or master)
         DEFAULT_BRANCH=$(git remote show origin | awk '/HEAD branch/ {print $NF}')
@@ -36,8 +35,9 @@ jobs:
         # Get the list of changed files compared to the default branch
         FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
 
-        # Define the required pattern
-        EXPECTED_PATTERN="# ANDRES MORENO"
+        # Define the expected patterns
+        PATTERN1="# Andres Moreno"
+        PATTERN2="// Andres Moreno"
 
         # Read the files list from the previous step
         for file in $FILES; do
@@ -47,7 +47,7 @@ jobs:
             FIRST_LINE=$(head -n 1 "$file")
 
             # Check if it matches the expected pattern
-            if [[ "$FIRST_LINE" != "$EXPECTED_PATTERN"* ]]; then
+            if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
               echo "❌ ERROR: The file '$file' must start with '$EXPECTED_PATTERN'."
               exit 1
             fi
