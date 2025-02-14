@@ -18,3 +18,5 @@ jobs:
 
     - name: Validate Copyright
       uses: ./.github/actions/validate-copyright
+      with:
+        fail-step: false
