@@ -53,11 +53,22 @@ jobs:
         LOGICAL_ENV: ${{ vars.LOGICAL_ENV }}
         AWS_REGION: ${{ vars.AWS_REGION }}
         DYNAMODB_TABLE: ${{ vars.DYNAMODB_TABLE }}
+        BAND: ${{ vars.BUCKET }}
+        TWILIO_SECRET_NAME: ${{ vars.TWILIO_SECRET_NAME }}
+        PASS_API_SECRET_NAME: ${{ vars.PASS_API_SECRET_NAME }}
       run: |
-        export SOMETHING=else
-        envsubst < testfile.txt > mytest.txt
-        echo 'im done'
-        cat mytest.txt
+        envsubst < backend.config.template > backend.config
+
+        echo "Generated backend.config:"
+        cat backend.config
+
+        FORMATTED_CALLBACK_URLS=$(echo "[\"${{ vars.CALLBACK_URLS }}\"]" | sed 's/, /", "/g')
+        export CALLBACK_URLS=FORMATTED_CALLBACK_URLS
+
+        envsubst < terraform.tfvars.template > terraform.tfvars
+
+        echo "Generated terraform.tfvars:"
+        cat terraform.tfvars
 
     - name: Build and deploy ECS template
       run: |
