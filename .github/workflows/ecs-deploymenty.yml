@@ -1,3 +1,5 @@
+# Andres Moreno
+
 name: Elastic Container Service Deployment
 
 on:
@@ -35,7 +37,7 @@ jobs:
         FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
 
         # Define the required pattern
-        EXPECTED_PATTERN="ANDRES MORENO"
+        EXPECTED_PATTERN="# ANDRES MORENO"
 
         # Read the files list from the previous step
         for file in $FILES; do
