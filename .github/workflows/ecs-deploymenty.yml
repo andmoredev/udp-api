@@ -48,8 +48,8 @@ jobs:
 
     - name: Replacements
       env:
-        Foo: Hello
-        Bar: Whatup
+        FOO: Hello
+        BAR: Whatup
       run: |
         envsubst < testfile.txt
         cat testfile.txt
