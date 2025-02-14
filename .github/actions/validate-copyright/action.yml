@@ -10,6 +10,11 @@ inputs:
     description: "Fail step if any file does not meet the required pattern"
     required: false
     default: "true"
+  updated-only:
+    description: "Only check updated files"
+    required: false
+    default: "false"
+
 
 runs:
   using: "composite"
@@ -27,7 +32,14 @@ runs:
         PATTERN2="// ANDRES MORENO"
 
         # Get all text files in the repository (excluding .git directory)
-        FILES=$(find . -type f -not -path "./.git/*")
+        Files=()
+        if [[ ${{ inputs.updated-only }} == "true"]]
+          FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
+        else
+          FILES=$(find . -type f -not -path "./.git/*")
+        fi
+
+
 
         # Initialize an empty array to store failed files
         FAILED_FILES=()
