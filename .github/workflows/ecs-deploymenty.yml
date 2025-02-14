@@ -34,11 +34,6 @@ jobs:
         # Get the list of changed files compared to the default branch
         FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
 
-        # Store file list for later use
-        echo "FILES=$FILES" >> $GITHUB_ENV
-
-    - name: Check for "ANDRES MORENO" at the top of each file
-      run: |
         # Define the required pattern
         EXPECTED_PATTERN="ANDRES MORENO"
 
