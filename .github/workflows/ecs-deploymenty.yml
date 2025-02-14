@@ -63,7 +63,7 @@ jobs:
         cat backend.config
 
         FORMATTED_CALLBACK_URLS=$(echo "[\"${{ vars.CALLBACK_URLS }}\"]" | sed 's/, /", "/g')
-        export CALLBACK_URLS=FORMATTED_CALLBACK_URLS
+        export CALLBACK_URLS=$FORMATTED_CALLBACK_URLS
 
         envsubst < terraform.tfvars.template > terraform.tfvars
 

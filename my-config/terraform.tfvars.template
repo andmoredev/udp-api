@@ -13,4 +13,4 @@ band          = "$BAND"
 logical_env   = "$LOGICAL_ENV"
 callback_urls = $CALLBACK_URLS # without quotes
 twilio_secret_name = "$TWILIO_SECRET_NAME"
-pass_api_secret_name = "$PASS_API_SECRET_name"
+pass_api_secret_name = "$PASS_API_SECRET_NAME"
