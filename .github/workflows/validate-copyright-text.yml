@@ -5,6 +5,11 @@ name: Copyright Validation
 on:
   push:
   workflow_dispatch:
+    inputs:
+      run_all_files:
+        description: "Run validation on all files? (true/false)"
+        required: false
+        default: "false"
 
 permissions:
   id-token: write
@@ -14,46 +19,65 @@ jobs:
   validate-copyright:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-    - name: Validate file header blob
-      run: |
-        # Define the expected patterns
-        PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
-        PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+      - name: Determine files to check
+        id: files-to-check
+        run: |
+          # Set default mode
+          RUN_ALL="${{ github.event.inputs.run_all_files || 'false' }}"
 
-        # Get all text files in the repository (excluding .git directory)
-        FILES=$(find . -type f -not -path "./.git/*")
+          if [[ "$RUN_ALL" == "true" ]]; then
+            echo "🔍 Checking ALL files in repository..."
+            FILES=$(find . -type f -not -path "./.git/*")
+          else
+            echo "🔍 Checking only changed files..."
+            # Get the default branch (main or master)
+            DEFAULT_BRANCH=$(git remote show origin | awk '/HEAD branch/ {print $NF}')
+            git fetch origin $DEFAULT_BRANCH --depth=1
 
-        # Initialize an empty array to store failed files
-        FAILED_FILES=()
-
-        # Loop through each file and check the first line
-        for file in $FILES; do
-          # Skip binary files
-          if [[ $(file --mime-type -b "$file") == text/* ]]; then
-            # Read the first line
-            FIRST_LINE=$(head -n 1 "$file")
-
-            # Check if it matches the expected pattern
-            if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
-              echo "❌ ERROR: The file '$file' does not start with the required copyright notice."
-              FAILED_FILES+=("$file")  # Store the file in the array
-            fi
+            # Get the list of changed files
+            FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
           fi
-        done
 
-        # If any files failed, print them to GitHub Summary and exit with an error
-        if [ ${#FAILED_FILES[@]} -ne 0 ]; then
-          echo "### ❌ Files Missing Required Copyright Notice" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          for f in "${FAILED_FILES[@]}"; do
-            echo "- $f" >> $GITHUB_STEP_SUMMARY
+          # Store the file list in an environment variable
+          echo "FILES=$FILES" >> $GITHUB_ENV
+
+      - name: Validate file header blob
+        run: |
+          # Define the expected patterns
+          PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+          PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+
+          # Initialize an empty array to store failed files
+          FAILED_FILES=()
+
+          # Loop through each file and check the first line
+          for file in $FILES; do
+            # Skip binary files
+            if [[ $(file --mime-type -b "$file") == text/* ]]; then
+              # Read the first line
+              FIRST_LINE=$(head -n 1 "$file")
+
+              # Check if it matches the expected pattern
+              if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
+                echo "❌ ERROR: The file '$file' does not start with the required copyright notice."
+                FAILED_FILES+=("$file")  # Store the file in the array
+              fi
+            fi
           done
-          exit 0
-        fi
 
-        echo "✅ All repository files meet the required pattern."
+          # If any files failed, print them to GitHub Summary and exit with an error
+          if [ ${#FAILED_FILES[@]} -ne 0 ]; then
+            echo "### ❌ Files Missing Required Copyright Notice" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            for f in "${FAILED_FILES[@]}"; do
+              echo "- $f" >> $GITHUB_STEP_SUMMARY
+            done
+            exit 1
+          fi
+
+          echo "✅ All checked files meet the required pattern."
