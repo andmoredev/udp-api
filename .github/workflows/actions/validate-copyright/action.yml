@@ -1,0 +1,56 @@
+name: Validate Copyright
+description: "Checks if all text files contain the required copyright notice."
+
+inputs:
+  fetch-depth:
+    description: "Depth for git checkout"
+    required: false
+    default: "2"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Validate file header blob
+      shell: bash
+      run: |
+        # Define the expected patterns
+        PATTERN1="# ANDRES MORENO"
+        PATTERN2="// ANDRES MORENO"
+
+        # Get all text files in the repository (excluding .git directory)
+        FILES=$(find . -type f -not -path "./.git/*")
+
+        # Initialize an empty array to store failed files
+        FAILED_FILES=()
+
+        # Loop through each file and check the first line
+        for file in $FILES; do
+          # Skip binary files
+          if [[ $(file --mime-type -b "$file") == text/* ]]; then
+            # Read the first line
+            FIRST_LINE=$(head -n 1 "$file")
+
+            # Check if it matches the expected pattern
+            if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
+              echo "❌ ERROR: The file '$file' does not start with the required copyright notice."
+              FAILED_FILES+=("$file")  # Store the file in the array
+            fi
+          fi
+        done
+
+        # If any files failed, print them to GitHub Summary and exit with an error
+        if [ ${#FAILED_FILES[@]} -ne 0 ]; then
+          echo "### ❌ Files Missing Required Copyright Notice" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          for f in "${FAILED_FILES[@]}"; do
+            echo "- $f" >> $GITHUB_STEP_SUMMARY
+          done
+          exit 1
+        fi
+
+        echo "✅ All repository files meet the required pattern."
