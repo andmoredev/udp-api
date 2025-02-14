@@ -36,8 +36,8 @@ jobs:
         FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
 
         # Define the expected patterns
-        PATTERN1="# Andres Moreno"
-        PATTERN2="// Andres Moreno"
+        PATTERN1="# ANDRES MORENO"
+        PATTERN2="// ANDRES MORENO"
 
         # Read the files list from the previous step
         for file in $FILES; do
