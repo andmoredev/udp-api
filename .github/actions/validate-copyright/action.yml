@@ -34,7 +34,7 @@ runs:
         # Get all text files in the repository (excluding .git directory)
         Files=()
         if [[ ${{ inputs.updated-only }} == "true" ]]; then
-          FILES+=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
+          FILES+=$(git diff --name-only origin/main HEAD)
         else
           FILES+=$(find . -type f -not -path "./.git/*")
         fi
