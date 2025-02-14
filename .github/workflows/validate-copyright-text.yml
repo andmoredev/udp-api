@@ -3,7 +3,6 @@
 name: Copyright Validation
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       run_all_files:
