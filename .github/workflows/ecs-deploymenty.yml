@@ -52,7 +52,6 @@ jobs:
         BAR: Whatup
       run: |
         envsubst < testfile.txt
-        cat testfile.txt
 
     - name: Build and deploy ECS template
       run: |
