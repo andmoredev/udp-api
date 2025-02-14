@@ -29,12 +29,14 @@ jobs:
       with:
         fail-step: false
         updated-only: true
+
   deploy-ecs:
+    needs: [pre-deploy]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
