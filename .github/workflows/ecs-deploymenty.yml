@@ -47,6 +47,7 @@ jobs:
         role-skip-session-tagging: true
 
     - name: Replacements
+      working-directory: ./my-config
       env:
         BUCKET: ${{ vars.BUCKET }}
         LOGICAL_ENV: ${{ vars.LOGICAL_ENV }}
