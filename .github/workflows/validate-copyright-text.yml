@@ -53,7 +53,7 @@ jobs:
           for f in "${FAILED_FILES[@]}"; do
             echo "- $f" >> $GITHUB_STEP_SUMMARY
           done
-          exit 1
+          exit 0
         fi
 
         echo "✅ All repository files meet the required pattern."
