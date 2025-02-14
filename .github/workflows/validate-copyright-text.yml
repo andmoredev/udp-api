@@ -22,8 +22,8 @@ jobs:
     - name: Validate file header blob
       run: |
         # Define the expected patterns
-        PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
-        PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+        PATTERN1="# ANDRES MORENO."
+        PATTERN2="// ANDRES MORENO."
 
         # Get all text files in the repository (excluding .git directory)
         FILES=$(find . -type f -not -path "./.git/*")
