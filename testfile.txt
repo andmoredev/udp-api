@@ -9,4 +9,5 @@ region         = "$AWS_REGION"
 bucket         = "$BUCKET"
 dynamodb_table = "$DYNAMODB_TABLE"
 key            = "$LOGICAL_ENV/terraform.tfstate"
+something      = "$SOMETHING"
 encrypt        = true

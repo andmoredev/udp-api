@@ -53,6 +53,7 @@ jobs:
         AWS_REGION: ${{ vars.AWS_REGION }}
         DYNAMODB_TABLE: ${{ vars.DYNAMODB_TABLE }}
       run: |
+        export SOMETHING=else
         envsubst < testfile.txt > mytest.txt
         echo 'im done'
         cat mytest.txt
