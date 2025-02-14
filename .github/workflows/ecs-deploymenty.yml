@@ -36,8 +36,8 @@ jobs:
         FILES=$(git diff --name-only origin/$DEFAULT_BRANCH HEAD)
 
         # Define the expected patterns
-        PATTERN1="# COPYRIGHT - CUBIC ("CUBIC"). ALL RIGHTS RESERVED."
-        PATTERN2="// COPYRIGHT - CUBIC ("CUBIC"). ALL RIGHTS RESERVED."
+        PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+        PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
 
         # Read the files list from the previous step
         for file in $FILES; do
