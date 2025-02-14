@@ -6,6 +6,8 @@ EXPECTED_PATTERN="ANDRES MORENO"
 # Get list of staged files
 FILES=$(git diff --cached --name-only --diff-filter=ACM)
 
+echo Im here
+echo $FILES
 # Loop through each file and check if it starts with the required pattern
 for file in $FILES; do
   # Skip binary files
