@@ -51,7 +51,9 @@ jobs:
         FOO: Hello
         BAR: Whatup
       run: |
-        envsubst < testfile.txt
+        envsubst < testfile.txt > mytest.txt
+        echo 'im done'
+        cat mytest.txt
 
     - name: Build and deploy ECS template
       run: |
