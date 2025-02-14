@@ -10,6 +10,16 @@ on:
       - main
 
   workflow_dispatch:
+    inputs:
+      tf_log_level:
+        type: choice
+        description: 'Select the log level to be used by Terraform'
+        default: ERROR
+        options:
+          - DEBUG
+          - INFO
+          - WARN
+          - ERROR
 
 permissions:
   id-token: write
