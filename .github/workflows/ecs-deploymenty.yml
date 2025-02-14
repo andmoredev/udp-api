@@ -54,7 +54,7 @@ jobs:
           fi
         done
 
-        echo "✅ All files meet the required pattern."
+        echo "✅ All updated files meet the required pattern."
 
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4

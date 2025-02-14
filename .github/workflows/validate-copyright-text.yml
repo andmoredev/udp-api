@@ -1,0 +1,46 @@
+# COPYRIGHT - CUBIC ("CUBIC"). ALL RIGHTS RESERVED.
+
+name: Elastic Container Service Deployment
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-ecs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    - name: Validate file header blob
+      run: |
+        # Define the expected patterns
+        PATTERN1="# COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+        PATTERN2="// COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+
+        # Get all text files in the repository (excluding .git directory)
+        FILES=$(find . -type f -not -path "./.git/*")
+
+        # Loop through each file and check the first line
+        for file in $FILES; do
+          # Skip binary files
+          if [[ $(file --mime-type -b "$file") == text/* ]]; then
+            # Read the first line
+            FIRST_LINE=$(head -n 1 "$file")
+
+            # Check if it matches the expected pattern
+            if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
+              echo "❌ ERROR: The file '$file' must start with '$PATTERN1' or '$PATTERN2'."
+              exit 1
+            fi
+          fi
+        done
+
+        echo "✅ All repository files meet the required pattern."
