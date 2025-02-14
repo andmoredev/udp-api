@@ -48,7 +48,7 @@ jobs:
 
             # Check if it matches the expected pattern
             if [[ "$FIRST_LINE" != "$PATTERN1"* && "$FIRST_LINE" != "$PATTERN2"* ]]; then
-              echo "❌ ERROR: The file '$file' must start with '$EXPECTED_PATTERN'."
+              echo "❌ ERROR: The file '$file' must start with '$PATTERN1' or '$PATTERN2'."
               exit 1
             fi
           fi
