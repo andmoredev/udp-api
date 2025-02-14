@@ -2,10 +2,6 @@ name: Validate Copyright
 description: "Checks if all text files contain the required copyright notice."
 
 inputs:
-  fetch-depth:
-    description: "Depth for git checkout"
-    required: false
-    default: "2"
   fail-step:
     description: "Fail step if any file does not meet the required pattern"
     required: false
@@ -22,7 +18,7 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: ${{ inputs.fetch-depth }}
+        fetch-depth: 2
 
     - name: Validate file header blob
       shell: bash
