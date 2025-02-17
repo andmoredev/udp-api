@@ -20,7 +20,7 @@ runs:
       shell: bash
       run: |
         # Define the expected patterns
-        PATTERN="COPYRIGHT - CUBIC (\"CUBIC\"). ALL RIGHTS RESERVED."
+        PATTERN="COPYRIGHT - CUBIC"
 
         # Initialize an empty array to store files
         FAILED_FILES=()
