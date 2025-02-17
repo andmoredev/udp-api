@@ -1,3 +1,5 @@
+# ANDRES MORENO
+
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
@@ -26,4 +28,3 @@ Outputs:
   ECRRepositoryUrl:
     Description: URL of the ECR Repository
     Value: !GetAtt HelloWorldRepository.RepositoryUri
-    
