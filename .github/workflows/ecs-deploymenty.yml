@@ -10,16 +10,6 @@ on:
       - main
 
   workflow_dispatch:
-    inputs:
-      tf_log_level:
-        type: choice
-        description: 'Select the log level to be used by Terraform'
-        default: ERROR
-        options:
-          - DEBUG
-          - INFO
-          - WARN
-          - ERROR
 
 permissions:
   id-token: write
@@ -33,12 +23,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
-    - name: Validate Copyright
-      uses: ./.github/actions/validate-copyright
-      with:
-        fail-step: false
-        updated-only: true
 
   deploy-ecs:
     needs: [pre-deploy]
@@ -55,30 +39,6 @@ jobs:
         role-session-name: ecs-repo-deploy
         role-duration-seconds: 3600
         role-skip-session-tagging: true
-
-    - name: Replacements
-      working-directory: ./my-config
-      env:
-        BUCKET: ${{ vars.BUCKET }}
-        LOGICAL_ENV: ${{ vars.LOGICAL_ENV }}
-        AWS_REGION: ${{ vars.AWS_REGION }}
-        DYNAMODB_TABLE: ${{ vars.DYNAMODB_TABLE }}
-        BAND: ${{ vars.BUCKET }}
-        TWILIO_SECRET_NAME: ${{ vars.TWILIO_SECRET_NAME }}
-        PASS_API_SECRET_NAME: ${{ vars.PASS_API_SECRET_NAME }}
-      run: |
-        envsubst < backend.config.template > backend.config
-
-        echo "Generated backend.config:"
-        cat backend.config
-
-        FORMATTED_CALLBACK_URLS=$(echo "[\"${{ vars.CALLBACK_URLS }}\"]" | sed 's/, /", "/g')
-        export CALLBACK_URLS=$FORMATTED_CALLBACK_URLS
-
-        envsubst < terraform.tfvars.template > terraform.tfvars
-
-        echo "Generated terraform.tfvars:"
-        cat terraform.tfvars
 
     - name: Build and deploy ECS template
       run: |
