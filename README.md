@@ -1,6 +1,6 @@
-# ECS Hello World Task
+# UDP API with Network Load Balancer and ECS
 
-This project creates an ECS task using AWS SAM that returns a "Hello World" message. The task runs in Fargate and includes CloudWatch logging.
+This project creates an ECS task using AWS SAM that returns a "Hello World" message. The task runs in Fargate and includes CloudWatch logging. The task is called via UDP by using a Network Load Balancer.
 
 ## Prerequisites
 
@@ -8,9 +8,23 @@ This project creates an ECS task using AWS SAM that returns a "Hello World" mess
 - Docker installed (for building and deploying the application)
 - AWS Account and configured credentials
 
+## Stacks
+
+The project is separate into separate stacks responsible for different things.
+* ECR Stack deploys the container repository that will be used by ECS to pull the image for the Task.
+* Network Stack deploys all the required networking components needed to deploy this application. This includes the VPCs, Subnets, the Network Load Balancer that will be used as the UDP entry point for the API.
+* ECS Stack deploys the ECS cluster, ECS Service and creates the task definition
+
+You first need to get the core components (Network and ECR) deployed. With these resources in place we can build and publish our container image to ECR. Once we have a published image we can deploy the ECS resources, we need to follow this order since the Task Definitions for ECS reference the image from ECR.
+
 ## Deployment
 
-### 1. Build & Deploy the ECR repository:
+Each stack can be deployed two different ways:
+* Using the SAM CLI from your local terminal.
+* Using the provided GitHub workflows.
+
+### ECR Stack
+
 ```bash
 # Build the ECR stack
 sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml   
@@ -21,7 +35,20 @@ sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.
 sam deploy --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml
 ```
 
-### 2. Build and push the Docker image:
+### Networking Stack
+
+```bash
+# Build the Network Stack
+sam build --config-file samconfig.yaml --config-env network --template template-network.yaml
+```
+
+```bash
+# Deploy the Network stack
+sam deploy --config-file samconfig.yaml --config-env network --template template-network.yaml
+```
+
+### Build and Publish Container Image
+
 ```bash
 # Login to ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {ACCOUNT_ID}].dkr.ecr.us-east-1.amazonaws.com
@@ -34,26 +61,10 @@ docker tag hello-world-app-udp:{TAG} {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
 
 # Push the image to ECR
 docker push {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
-
-### 3. Build & Deploy Networking Components
-- VPC with necessary DNS support
-- Public subnets across 2 availability zones
-- Internet Gateway with route table configuration
-- Security Group configured for UDP/TCP ports 53 and HTTP port 80
-- Network Load Balancer with UDP listener
-- Target Group for UDP traffic on port 53
-
-```bash
-# Build the Network Stack
-sam build --config-file samconfig.yaml --config-env network --template template-network.yaml
 ```
 
-```bash
-# Deploy the Network stack
-sam deploy --config-file samconfig.yaml --config-env network --template template-network.yaml
-```
+### ECS Stack
 
-### 4. Deploy ECS Stack:
 ```bash
 # Build the ECS Stack
 sam build --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
@@ -64,10 +75,11 @@ sam build --config-file samconfig.yaml --config-env ecs --template template-ecs.
 sam deploy --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
 ```
 
-### 5. After deployment, you can access the service using the URL provided in the stack outputs.
+## Testing 
 
+```bash
 echo "Hello" | nc -u -w1 hello-world-udp-nlb-a52d3d855052d6d1.elb.us-east-1.amazonaws.com 53
-
+```
 
 ## Components
 
