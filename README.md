@@ -5,49 +5,83 @@ This project creates an ECS task using AWS SAM that returns a "Hello World" mess
 ## Prerequisites
 
 - AWS SAM CLI installed and configured
-- Docker installed (for building and deploying the application)
-- AWS Account and configured credentials
+- Docker (for building and deploying the application)
 
 ## Stacks
 
-The project is separate into separate stacks responsible for different things.
-* ECR Stack deploys the container repository that will be used by ECS to pull the image for the Task.
-* Network Stack deploys all the required networking components needed to deploy this application. This includes the VPCs, Subnets, the Network Load Balancer that will be used as the UDP entry point for the API.
-* ECS Stack deploys the ECS cluster, ECS Service and creates the task definition
+The project is separated into separate stacks that are responsible for different parts of the architecture.
 
-You first need to get the core components (Network and ECR) deployed. With these resources in place we can build and publish our container image to ECR. Once we have a published image we can deploy the ECS resources, we need to follow this order since the Task Definitions for ECS reference the image from ECR.
+### ECR Stack
+Sets up the repository where the container image will be deployed.
+
+### Networking Stack
+Deploys all the required networking components to be able to run the API. This includes:
+- VPC
+- Public subnets across 2 availability zones
+- Internet Gateway with route table configuration
+- Security Group configured for UDP/TCP ports 53 and HTTP port 80
+- Network Load Balancer with UDP listener
+- Target Group for UDP traffic on port 53
+
+### ECS Stack
+Contains all the resources to run Elastic Container Service with Fargate. This includes:
+- ECS Cluster
+- ECS Service
+- ECS Task Definition
 
 ## Deployment
 
-Each stack can be deployed two different ways:
-* Using the SAM CLI from your local terminal.
+Each stack is dependent on the other deploying resources higher in the stack. The order is the following:  
+
+1. Networking Stack
+1. ECR Stack
+1. Publish Container Image
+1. ECS Stack
+
+Each of these steps can be done in two different ways:
+* Using SAM CLI from your local terminal.
 * Using the provided GitHub workflows.
 
-### ECR Stack
+### Deploying using GitHub Workflows
 
-```bash
-# Build the ECR stack
-sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml   
-```
+In my opinion this is the simpler route as everything is already setup to work, all that is needed is to setup the proper trust relationship between GitHub and AWS and setting up the proper secrets.
 
-```bash
-# Deploy the ECR stack
-sam deploy --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml
-```
+#### Clone/fork the repository
+Clone or fork this repository and push it to your own GitHub account.
 
-### Networking Stack
+#### Setup GitHub environment
+ Add your Pipeline Execution Role (PIPELINE_EXECUTION_ROLE), CloudFormation Execution Role (CLOUDFORMATION_EXECUTION_ROLE) and a target S3 bucket name for the artifacts (ARTIFACTS_BUCKET_NAME) as repository secrets. Here is an explanation by [Chris Ebert](https://twitter.com/realchrisebert) on how to set this up.
+
+Run the GitHub Workflows already defined in the project.
+
+1. Run the `Network Components Deployment` workflow.
+1. Run the `Elastic Container Registry Deployment` workflow.
+1. Run the `Build Container and Publish to ECR` workflow.
+1. Run the `Elastic Container Service` workflow.
+
+### Deploying using SAM CLI
+
+#### Networking Stack
 
 ```bash
 # Build the Network Stack
 sam build --config-file samconfig.yaml --config-env network --template template-network.yaml
-```
 
-```bash
 # Deploy the Network stack
 sam deploy --config-file samconfig.yaml --config-env network --template template-network.yaml
 ```
 
-### Build and Publish Container Image
+#### ECR Stack
+
+```bash
+# Build the ECR stack
+sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml   
+
+# Deploy the ECR stack
+sam deploy --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml
+```
+
+#### Build and Publish Container Image
 
 ```bash
 # Login to ECR
@@ -63,14 +97,12 @@ docker tag hello-world-app-udp:{TAG} {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
 docker push {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
 ```
 
-### ECS Stack
+#### ECS Stack
 
 ```bash
 # Build the ECS Stack
 sam build --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
-```
 
-```bash
 # Deploy the ECS stack
 sam deploy --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
 ```
