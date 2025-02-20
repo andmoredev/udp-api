@@ -111,7 +111,7 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build --platform linux/amd64 -t $ECR_REPOSITORY_URL:$IMAGE_TAG ./hello-world-app-udp
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
 
         # Also tag as latest
         docker tag $ECR_REPOSITORY_URL:$IMAGE_TAG $ECR_REPOSITORY_URL:latest
