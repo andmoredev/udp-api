@@ -16,7 +16,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -31,6 +31,8 @@ jobs:
         sam delete  \
           --config-file samconfig.yaml \
           --config-env ecs
+          --no-prompts
+
 
   delete-ecr:
     needs: [delete-ecs]
@@ -70,6 +72,7 @@ jobs:
         sam delete  \
           --config-file samconfig.yaml \
           --config-env ecr
+          --no-prompts
 
   delete-network:
     needs: [delete-ecs]
@@ -92,3 +95,4 @@ jobs:
         sam delete  \
           --config-file samconfig.yaml \
           --config-env network
+          --no-prompts
