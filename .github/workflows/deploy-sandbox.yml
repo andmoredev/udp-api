@@ -11,9 +11,12 @@ permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}
+
 env:
   ECR_REPOSITORY: andmoredev-test-repo
-  
+
 jobs:
   deploy-ecr:
     runs-on: ubuntu-latest
@@ -109,6 +112,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy-ecs:
+    needs: [build-and-publish-image]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code

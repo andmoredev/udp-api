@@ -6,7 +6,7 @@ Parameters:
     Type: String
 
 Resources:
-  HelloWorldRepository:
+  ECRRepository:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Sub ${RepositoryName}
@@ -14,16 +14,7 @@ Resources:
         ScanOnPush: true
       ImageTagMutability: MUTABLE
 
-  ECRRepositoryUrlParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: /hello-world/ecr-repository-url
-      Type: String
-      Value: !Sub ${HelloWorldRepository.RepositoryUri}
-      Description: URL of the Hello World ECR Repository
-
 Outputs:
   ECRRepositoryUrl:
     Description: URL of the ECR Repository
-    Value: !GetAtt HelloWorldRepository.RepositoryUri
-    
+    Value: !GetAtt ECRRepository.RepositoryUri

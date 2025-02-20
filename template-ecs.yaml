@@ -43,7 +43,7 @@ Resources:
       ContainerDefinitions:
         - Name: hello-world-udp-container
           MemoryReservation: 128
-          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/andmoredev-test-repo:${DockerImageTag}
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/test-ecr-repo:${DockerImageTag}
           Essential: true
           PortMappings:
             - ContainerPort: 53
@@ -66,15 +66,15 @@ Resources:
       LoadBalancers:
         - ContainerName: hello-world-udp-container
           ContainerPort: 53
-          TargetGroupArn: !ImportValue "udp-service-networking-network-TargetGroupArn"
+          TargetGroupArn: !ImportValue "udp-api-networking-network-TargetGroupArn"
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - !ImportValue "udp-service-networking-network-SecurityGroupId"
+            - !ImportValue "udp-api-networking-network-SecurityGroupId"
           Subnets:
-            - !ImportValue "udp-service-networking-network-PublicSubnet1Id"
-            - !ImportValue "udp-service-networking-network-PublicSubnet2Id"
+            - !ImportValue "udp-api-networking-network-PublicSubnet1Id"
+            - !ImportValue "udp-api-networking-network-PublicSubnet2Id"
 
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -105,4 +105,4 @@ Outputs:
   ServiceUrl:
     Description: URL of the service
     Value:
-      !ImportValue "udp-service-networking-network-LoadBalancerDNS"
+      !ImportValue "udp-api-networking-network-LoadBalancerDNS"

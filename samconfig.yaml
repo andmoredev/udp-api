@@ -1,20 +1,4 @@
 version: 0.1
-default:
-  build:
-    parameters:
-      cached: 'true'
-      parallel: 'true'
-
-  deploy:
-    parameters:
-      stack_name: udp-service
-      s3_prefix: udp-service
-      region: us-east-1
-      capabilities: CAPABILITY_IAM
-      parameter_overrides:
-        - "DockerImageName=hello-world"
-        - "DockerImageTag=latest"
-
 ecr:
   build:
     parameters:
@@ -23,12 +7,12 @@ ecr:
 
   deploy:
     parameters:
-      stack_name: udp-service-ecr
-      s3_prefix: udp-service-ecr
+      stack_name: udp-api-ecr
+      s3_prefix: udp-api-ecr
       region: us-east-1
       capabilities: CAPABILITY_IAM
       parameter_overrides:
-        - "RepositoryName=andmoredev-test-repo"
+        - "RepositoryName=test-ecr-repo"
 
 network:
   build:
@@ -38,8 +22,8 @@ network:
 
   deploy:
     parameters:
-      stack_name: udp-service-networking
-      s3_prefix: udp-service-networking
+      stack_name: udp-api-networking
+      s3_prefix: udp-api-networking
       region: us-east-1
       capabilities: CAPABILITY_IAM
 
@@ -51,11 +35,11 @@ ecs:
 
   deploy:
     parameters:
-      stack_name: udp-service-ecs
-      s3_prefix: udp-service-ecs
+      stack_name: udp-api-ecs
+      s3_prefix: udp-api-ecs
       region: us-east-1
       capabilities: CAPABILITY_IAM
       parameter_overrides:
-        - "NetworkStackName=udp-service-networking"
-        - "ECRRepositoryUrl=965116670064.dkr.ecr.us-east-1.amazonaws.com/andmoredev-test-repo"
+        - "NetworkStackName=udp-api-networking"
+        - "ECRRepositoryUrl=965116670064.dkr.ecr.us-east-1.amazonaws.com/test-ecr-repo"
         - "DockerImageTag=latest"
