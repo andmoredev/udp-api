@@ -116,6 +116,8 @@ sam deploy --config-file samconfig.yaml --config-env ecs --template template-ecs
 
 ## Testing 
 
+To test that it's working, grab the URL from the output of the ECS deployment and replace it in the command below.
+
 ```bash
-echo "Hello" | nc -u -w1 hello-world-udp-nlb-a52d3d855052d6d1.elb.us-east-1.amazonaws.com 53
+echo "Hello" | nc -u -w1 {NLB_URL} 53
 ```

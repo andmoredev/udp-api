@@ -14,9 +14,6 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}
 
-env:
-  ECR_REPOSITORY: andmoredev-test-repo
-
 jobs:
   deploy-ecr:
     runs-on: ubuntu-latest

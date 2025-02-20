@@ -42,5 +42,4 @@ ecs:
       parameter_overrides:
         - "NetworkStackName=udp-api-networking"
         - "ECRStackName=udp-api-ecr"
-        - "ECRRepositoryUrl=965116670064.dkr.ecr.us-east-1.amazonaws.com/test-ecr-repo"
         - "DockerImageTag=latest"

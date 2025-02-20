@@ -1,0 +1,90 @@
+name: Deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  delete-ecs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: ecs-stack-delete
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Delete Stack
+      run: |
+        sam delete  \
+          --config-file samconfig.yaml \
+          --config-env ecs
+
+  delete-ecr:
+    needs: [delete-ecs]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: ecr-stack-delete
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Get ECR Repository from Stack Output
+      run: |
+        ECR_REPOSITORY_NAME=$(aws cloudformation describe-stacks \
+        --stack-name udp-api-ecr \
+        --query 'Stacks[0].Outputs[?OutputKey==`ECRRepositoryName`].OutputValue' \
+        --output text)
+        echo "ECR_REPOSITORY_NAME=$ECR_REPOSITORY_NAME" >> $GITHUB_ENV
+
+    - name: Delete All Images
+      run: |
+        aws ecr batch-delete-image \
+        --repository-name $ECR_REPOSITORY_NAME \
+        --image-ids $(aws ecr list-images \
+            --repository-name $ECR_REPOSITORY_NAME \
+            --query 'imageIds[*]' \
+            --output json)
+
+    - name: Delete Stack
+      run: |
+        sam delete  \
+          --config-file samconfig.yaml \
+          --config-env ecr
+
+  delete-network:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: network-stack-delete
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Build and deploy Network template
+      run: |
+        sam delete  \
+          --config-file samconfig.yaml \
+          --config-env network
