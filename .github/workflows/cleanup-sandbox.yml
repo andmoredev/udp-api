@@ -30,7 +30,7 @@ jobs:
       run: |
         sam delete  \
           --config-file samconfig.yaml \
-          --config-env ecs
+          --config-env ecs \
           --no-prompts
 
 
@@ -71,7 +71,7 @@ jobs:
       run: |
         sam delete  \
           --config-file samconfig.yaml \
-          --config-env ecr
+          --config-env ecr \
           --no-prompts
 
   delete-network:
@@ -94,5 +94,5 @@ jobs:
       run: |
         sam delete  \
           --config-file samconfig.yaml \
-          --config-env network
+          --config-env network \
           --no-prompts
