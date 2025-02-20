@@ -44,9 +44,11 @@ Resources:
       ContainerDefinitions:
         - Name: ecs-udp-container
           MemoryReservation: 128
-          Image:
-            Fn::ImportValue:
-              Fn::Sub: ${ECRStackName}-ECRRepositoryUrl:${DockerImageTag}
+          Image: !Sub
+            - "${ECRRepositoryUrl}:${DockerImageTag}"
+            - ECRRepositoryUrl:
+                Fn::ImportValue:
+                  Fn::Sub: "${ECRStackName}-ECRRepositoryUrl"
           Essential: true
           PortMappings:
             - ContainerPort: 53
