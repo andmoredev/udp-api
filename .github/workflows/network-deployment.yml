@@ -1,12 +1,6 @@
 name: Network Components Deployment
 
 on:
-  push:
-    paths:
-      - template-network.yaml
-    branches:
-      - main
-
   workflow_dispatch:
 
 permissions:

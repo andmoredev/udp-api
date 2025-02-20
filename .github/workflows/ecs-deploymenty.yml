@@ -1,12 +1,6 @@
 name: Elastic Container Service Deployment
 
 on:
-  push:
-    paths:
-      - template-ecs.yaml
-    branches:
-      - main
-
   workflow_dispatch:
 
 permissions:

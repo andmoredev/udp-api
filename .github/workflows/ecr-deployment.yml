@@ -1,12 +1,6 @@
 name: Elastic Container Registry Deployment
 
 on:
-  push:
-    paths:
-      - template-ecr.yaml
-    branches:
-      - main
-
   workflow_dispatch:
 
 permissions:

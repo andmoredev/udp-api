@@ -1,12 +1,6 @@
 name: Build Container and Publish to ECR
 
 on:
-  push:
-    paths:
-      - hello-world-app-udp
-    branches:
-      - main
-
   workflow_dispatch:
 
 env:

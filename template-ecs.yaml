@@ -6,6 +6,9 @@ Parameters:
   NetworkStackName:
     Type: String
     Description: AWS CloudFormation stack name of the NetworkStack
+  ECRStackName:
+    Type: String
+    Description: AWS CloudFormation stack name of the ECRStack
   ECRRepositoryUrl:
     Type: String
   DockerImageTag:
@@ -43,7 +46,9 @@ Resources:
       ContainerDefinitions:
         - Name: ecs-udp-container
           MemoryReservation: 128
-          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/test-ecr-repo:${DockerImageTag}
+          Image:
+            Fn::ImportValue:
+              Fn::Sub: ${ECRStackName}-ECRRepositoryUrl:${DockerImageTag}
           Essential: true
           PortMappings:
             - ContainerPort: 53

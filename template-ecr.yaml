@@ -18,3 +18,5 @@ Outputs:
   ECRRepositoryUrl:
     Description: URL of the ECR Repository
     Value: !GetAtt ECRRepository.RepositoryUri
+    Export:
+      Name: !Sub '${AWS::StackName}-ECRRepositoryUrl'
