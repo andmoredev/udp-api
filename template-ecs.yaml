@@ -9,8 +9,6 @@ Parameters:
   ECRStackName:
     Type: String
     Description: AWS CloudFormation stack name of the ECRStack
-  ECRRepositoryUrl:
-    Type: String
   DockerImageTag:
     Type: String
     Default: latest
