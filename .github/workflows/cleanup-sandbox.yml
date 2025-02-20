@@ -1,4 +1,4 @@
-name: Deployment
+name: Sandbox Cleanup
 
 on:
   workflow_dispatch:
