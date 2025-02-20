@@ -50,7 +50,14 @@ In my opinion this is the simpler route as everything is already setup to work, 
 Clone or fork this repository and push it to your own GitHub account.
 
 #### Setup GitHub environment
- Add your Pipeline Execution Role (PIPELINE_EXECUTION_ROLE), CloudFormation Execution Role (CLOUDFORMATION_EXECUTION_ROLE) and a target S3 bucket name for the artifacts (ARTIFACTS_BUCKET_NAME) as repository secrets. Here is an explanation by [Chris Ebert](https://twitter.com/realchrisebert) on how to set this up.
+ Add your Pipeline Execution Role (PIPELINE_EXECUTION_ROLE), CloudFormation Execution Role (CLOUDFORMATION_EXECUTION_ROLE) and a target S3 bucket name for the artifacts (ARTIFACTS_BUCKET_NAME) as repository secrets. Here is an explanation by [Chris Ebert](https://twitter.com/realchrisebert) on how to set this up. Since the workflows publish the container image to ECR, the Pipeline Execution Role requires these permissions:
+ * ecr:GetAuthorizationToken
+ * ecr:InitiateLayerUpload
+ * ecr:InitiateLayerUpload
+ * *ecr:UploadLayerPart
+ * ecr:CompleteLayerUpload
+ * ecr:BatchCheckLayerAvailability
+ * ecr:PutImage
 
 Run the GitHub Workflows already defined in the project.
 
@@ -112,20 +119,3 @@ sam deploy --config-file samconfig.yaml --config-env ecs --template template-ecs
 ```bash
 echo "Hello" | nc -u -w1 hello-world-udp-nlb-a52d3d855052d6d1.elb.us-east-1.amazonaws.com 53
 ```
-
-## Components
-
-- ECR Repository for Docker image
-- ECS Cluster running on Fargate
-- Task Definition with custom container
-- ECS Service
-- VPC with public subnet
-- Security Group
-- CloudWatch Log Group
-- IAM Role for task execution
-
-
-
-
-# TODO
-* Added manual permissions to pipeline execution for this to work with ECR.

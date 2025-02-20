@@ -1,0 +1,139 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ECR_REPOSITORY: andmoredev-test-repo
+  
+jobs:
+  deploy-ecr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: ecr-repo-deploy
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Build and deploy ECR template
+      run: |
+        sam build  \
+          --template template-ecr.yaml \
+          --config-file samconfig.yaml \
+          --config-env ecr
+
+        sam deploy \
+          --template template-ecr.yaml \
+          --config-file samconfig.yaml \
+          --config-env ecr \
+          --s3-bucket ${{ secrets.ARTIFACTS_BUCKET_NAME }} \
+          --no-fail-on-empty-changeset \
+          --role-arn ${{ secrets.CLOUDFORMATION_EXECUTION_ROLE }}
+
+  deploy-network:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: network-repo-deploy
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Build and deploy Network template
+      run: |
+        sam build  \
+          --template template-network.yaml \
+          --config-file samconfig.yaml \
+          --config-env network
+
+        sam deploy \
+          --template template-network.yaml \
+          --config-file samconfig.yaml \
+          --config-env network \
+          --s3-bucket ${{ secrets.ARTIFACTS_BUCKET_NAME }} \
+          --no-fail-on-empty-changeset \
+          --role-arn ${{ secrets.CLOUDFORMATION_EXECUTION_ROLE }}
+
+  build-and-publish-image:
+    needs: [deploy-ecr, deploy-network]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: ecr-repo-deploy
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./hello-world-app-udp
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        # Also tag as latest
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+  deploy-ecs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.PIPELINE_EXECUTION_ROLE }}
+        role-session-name: ecs-repo-deploy
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    - name: Build and deploy ECS template
+      run: |
+        sam build  \
+          --template template-ecs.yaml \
+          --config-file samconfig.yaml \
+          --config-env ecs
+
+        sam deploy \
+          --template template-ecs.yaml \
+          --config-file samconfig.yaml \
+          --config-env ecs \
+          --s3-bucket ${{ secrets.ARTIFACTS_BUCKET_NAME }} \
+          --no-fail-on-empty-changeset \
+          --role-arn ${{ secrets.CLOUDFORMATION_EXECUTION_ROLE }}
