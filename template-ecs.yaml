@@ -14,26 +14,26 @@ Parameters:
     Description: Docker image tag to deploy
 
 Resources:
-  HelloWorldUDPLogGroup:
+  UdpApiLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /ecs/hello-world-udp
+      LogGroupName: /ecs/ecs-udp
       RetentionInDays: 7
 
-  HelloWorldCluster:
+  ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: hello-world-cluster
+      ClusterName: udp-api-cluster
       CapacityProviders:
         - FARGATE
       DefaultCapacityProviderStrategy:
         - CapacityProvider: FARGATE
           Weight: 1
 
-  HelloWorldTaskDefinition:
+  ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: hello-world-task
+      Family: ecs-task
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
@@ -41,7 +41,7 @@ Resources:
       Memory: 512
       ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
       ContainerDefinitions:
-        - Name: hello-world-udp-container
+        - Name: ecs-udp-container
           MemoryReservation: 128
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/test-ecr-repo:${DockerImageTag}
           Essential: true
@@ -51,30 +51,35 @@ Resources:
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref HelloWorldUDPLogGroup
+              awslogs-group: !Ref UdpApiLogGroup
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: ecs
 
   HelloWorldService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: hello-world-service
-      Cluster: !Ref HelloWorldCluster
-      TaskDefinition: !Ref HelloWorldTaskDefinition
+      ServiceName: ecs-service
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref ECSTaskDefinition
       DesiredCount: 1
       LaunchType: FARGATE
       LoadBalancers:
-        - ContainerName: hello-world-udp-container
+        - ContainerName: ecs-udp-container
           ContainerPort: 53
-          TargetGroupArn: !ImportValue "udp-api-networking-network-TargetGroupArn"
+          TargetGroupArn:
+            Fn::ImportValue:
+              Fn::Sub: "${NetworkStackName}-network-TargetGroupArn"
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-            - !ImportValue "udp-api-networking-network-SecurityGroupId"
+            - Fn::ImportValue:
+                Fn::Sub: "${NetworkStackName}-network-SecurityGroupId"
           Subnets:
-            - !ImportValue "udp-api-networking-network-PublicSubnet1Id"
-            - !ImportValue "udp-api-networking-network-PublicSubnet2Id"
+            - Fn::ImportValue:
+                Fn::Sub: "${NetworkStackName}-network-PublicSubnet1Id"
+            - Fn::ImportValue:
+                Fn::Sub: "${NetworkStackName}-network-PublicSubnet2Id"
 
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
@@ -105,4 +110,5 @@ Outputs:
   ServiceUrl:
     Description: URL of the service
     Value:
-      !ImportValue "udp-api-networking-network-LoadBalancerDNS"
+      Fn::ImportValue:
+        Fn::Sub: "${NetworkStackName}-network-LoadBalancerDNS"
