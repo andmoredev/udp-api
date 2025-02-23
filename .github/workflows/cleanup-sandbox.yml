@@ -33,7 +33,6 @@ jobs:
           --config-env ecs \
           --no-prompts
 
-
   delete-ecr:
     needs: [delete-ecs]
     runs-on: ubuntu-latest
@@ -95,7 +94,7 @@ jobs:
         role-duration-seconds: 3600
         role-skip-session-tagging: true
 
-    - name: Build and deploy Network template
+    - name: Delete Stack
       run: |
         sam delete  \
           --config-file samconfig.yaml \
