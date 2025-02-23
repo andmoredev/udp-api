@@ -63,6 +63,7 @@ jobs:
         IMAGES=$(aws ecr list-images \
             --repository-name $ECR_REPOSITORY_NAME \
             --query 'imageIds[*]' \
+            --no-paginate \
             --output json)
 
         echo $IMAGES
