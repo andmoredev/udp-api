@@ -61,12 +61,12 @@ jobs:
     - name: Delete All Images
       run: |
         IMAGES=$(aws ecr list-images \
-          --repository-name $ECR_REPOSITORY_NAME \
-          --query 'imageIds[*]' \
-          --no-paginate \
-          --output json | cat)
+        --repository-name $ECR_REPOSITORY_NAME \
+        --query 'imageIds[*]' \
+        --no-paginate \
+        --output json | jq -c .)
 
-        echo "$IMAGES" | jq -c .
+        echo "$IMAGES"
 
         aws ecr batch-delete-image \
         --repository-name $ECR_REPOSITORY_NAME \
