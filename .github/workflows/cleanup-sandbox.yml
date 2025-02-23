@@ -60,12 +60,16 @@ jobs:
 
     - name: Delete All Images
       run: |
-        aws ecr batch-delete-image \
-        --repository-name $ECR_REPOSITORY_NAME \
-        --image-ids $(aws ecr list-images \
+        IMAGES=$(aws ecr list-images \
             --repository-name $ECR_REPOSITORY_NAME \
             --query 'imageIds[*]' \
             --output json)
+
+        echo $IMAGES
+
+        aws ecr batch-delete-image \
+        --repository-name $ECR_REPOSITORY_NAME \
+        --image-ids $IMAGES
 
     - name: Delete Stack
       run: |
