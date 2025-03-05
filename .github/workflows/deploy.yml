@@ -121,11 +121,6 @@ jobs:
 
         docker push $ECR_REPOSITORY_URL:latest
 
-        envsubst < samconfig.yaml > samconfig.yaml
-
-        echo "Generated config"
-        cat samconfig.yaml
-
   deploy-ecs:
     needs: [build-and-publish-image]
     runs-on: ubuntu-latest
