@@ -18,12 +18,6 @@ udpServer.on('message', (msg, rinfo) => {
       console.error('Error sending UDP response:', err);
     }
   });
-
-  udpServer.send('second message', rinfo.port, rinfo.address, (err) => {
-    if (err) {
-      console.error('Error sending UDP response:', err);
-    }
-  });
 });
 
 udpServer.on('error', (err) => {
