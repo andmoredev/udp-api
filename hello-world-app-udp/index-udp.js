@@ -19,16 +19,11 @@ udpServer.on('message', (msg, rinfo) => {
     }
   });
 
-  // send another message after 5 seconds
-  setTimeout(() => {
-    const responseMessage = 'Hello from UDP server again!';
-    console.log(`Hello from UDP server again!`);
-    udpServer.send(responseMessage, rinfo.port, rinfo.address, (err) => {
-      if (err) {
-        console.error('Error sending UDP response:', err);
-      }
-    });
-  }, 5000);
+  udpServer.send('second message', rinfo.port, rinfo.address, (err) => {
+    if (err) {
+      console.error('Error sending UDP response:', err);
+    }
+  });
 });
 
 udpServer.on('error', (err) => {
