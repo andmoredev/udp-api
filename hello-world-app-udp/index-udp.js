@@ -20,17 +20,23 @@ udpServer.on('message', (msg, rinfo) => {
     'Hello from UDP server! 3333',
   ];
 
-  messages.forEach((message) => {
-    setTimeout(() => {
-      console.log(`Sending UDP response: ${message}`);
-
-      udpServer.send(message, rinfo.port, rinfo.address, (err) => {
-        if (err) {
-          console.error('Error sending UDP response:', err);
-        }
-      });
-    }, 200);
+  udpServer.send('WHAT IS HAPPENING', rinfo.port, rinfo.address, (err) => {
+    if (err) {
+      console.error('Error sending UDP response:', err);
+    }
   });
+
+  // messages.forEach((message) => {
+  //   setTimeout(() => {
+  //     console.log(`Sending UDP response: ${message}`);
+
+  //     udpServer.send(message, rinfo.port, rinfo.address, (err) => {
+  //       if (err) {
+  //         console.error('Error sending UDP response:', err);
+  //       }
+  //     });
+  //   }, 200);
+  // });
 
   // console.log(`Sending UDP response: ${responseMessage}`);
 
