@@ -123,6 +123,7 @@ jobs:
 
         envsubst < samconfig.yaml > samconfig.yaml
 
+        echo "Generated config"
         cat samconfig.yaml
 
   deploy-ecs:
