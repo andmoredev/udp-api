@@ -54,65 +54,13 @@ Clone or fork this repository and push it to your own GitHub account.
  * ecr:GetAuthorizationToken
  * ecr:InitiateLayerUpload
  * ecr:InitiateLayerUpload
- * *ecr:UploadLayerPart
+ * ecr:UploadLayerPart
  * ecr:CompleteLayerUpload
  * ecr:BatchCheckLayerAvailability
  * ecr:PutImage
 
-Run the GitHub Workflows already defined in the project.
-
-1. Run the `Network Components Deployment` workflow.
-1. Run the `Elastic Container Registry Deployment` workflow.
-1. Run the `Build Container and Publish to ECR` workflow.
-1. Run the `Elastic Container Service` workflow.
-
-### Deploying using SAM CLI
-
-#### Networking Stack
-
-```bash
-# Build the Network Stack
-sam build --config-file samconfig.yaml --config-env network --template template-network.yaml
-
-# Deploy the Network stack
-sam deploy --config-file samconfig.yaml --config-env network --template template-network.yaml
-```
-
-#### ECR Stack
-
-```bash
-# Build the ECR stack
-sam build --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml   
-
-# Deploy the ECR stack
-sam deploy --config-file samconfig.yaml --config-env ecr --template template-ecr.yaml
-```
-
-#### Build and Publish Container Image
-
-```bash
-# Login to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {ACCOUNT_ID}].dkr.ecr.us-east-1.amazonaws.com
-
-# Build the Docker image
-docker build --platform linux/amd64 -t hello-world-app-udp ./hello-world-app-udp
-
-# Tag the image
-docker tag hello-world-app-udp:{TAG} {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
-
-# Push the image to ECR
-docker push {ECR_REGISTRY}/{ECR_REPOSITORY}:{TAG}
-```
-
-#### ECS Stack
-
-```bash
-# Build the ECS Stack
-sam build --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
-
-# Deploy the ECS stack
-sam deploy --config-file samconfig.yaml --config-env ecs --template template-ecs.yaml
-```
+ #### Run the Workflow
+ Now all that is needed is to run the provided `Deployment` GitHub Workflow. This will take care of deploying all of the CloudFormation stacks and publish the container image.
 
 ## Testing 
 

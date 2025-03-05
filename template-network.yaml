@@ -136,8 +136,6 @@ Outputs:
   UDPNetworkLoadBalancerDNS:
     Description: DNS Name of UDP Network Load Balancer
     Value: !GetAtt UDPNetworkLoadBalancer.DNSName
-    Export:
-      Name: !Sub "${AWS::StackName}-network-LoadBalancerDNS"
 
   UDPTargetGroupArn:
     Description: UDP Target Group ARN
