@@ -42,4 +42,4 @@ ecs:
       parameter_overrides:
         - "NetworkStackName=udp-api-networking"
         - "ECRStackName=udp-api-ecr"
-        - "DockerImageTag=latest"
+        - "DockerImageTag=$IMAGE_TAG"
