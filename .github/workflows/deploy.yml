@@ -74,7 +74,7 @@ jobs:
     - name: Get NLB URL
       run: |
         NLB_URL=$(aws cloudformation describe-stacks \
-        --stack-name udp-api-ecr \
+        --stack-name udp-api-networking \
         --query 'Stacks[0].Outputs[?OutputKey==`UDPNetworkLoadBalancerDNS`].OutputValue' \
         --output text)
 
