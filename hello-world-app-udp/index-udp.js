@@ -13,11 +13,18 @@ udpServer.on('message', (msg, rinfo) => {
   const responseMessage = 'Hello from UDP server!';
   console.log(`Hello from UDP server!`);
 
-  udpServer.send(responseMessage, rinfo.port, rinfo.address, (err) => {
-    if (err) {
-      console.error('Error sending UDP response:', err);
-    }
-  });
+  // wait 2 seconds before sending the response
+  setTimeout(() => {
+    console.log(`Sending UDP response: ${responseMessage}`);
+
+    udpServer.send(responseMessage, rinfo.port, rinfo.address, (err) => {
+      if (err) {
+        console.error('Error sending UDP response:', err);
+      }
+    });
+  }, 1000);
+
+
 });
 
 udpServer.on('error', (err) => {
